@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum CustomOperation implements Operation {
+public enum nlgraph implements Operation {
     PING {
         @Override
         public ObjType[] getArguments() {
@@ -38,7 +38,7 @@ public enum CustomOperation implements Operation {
 
         @Override
         public void execute(Object[] instruction, float[] memory, HashMap<String, WritableFile> writableFiles, HashMap<String, ReadableFile> readableFiles, HashMap<String, Array> arrays, String[] stringTable) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
-            CustomOperation.pointer = new Node();
+            nlgraph.pointer = new Node();
 
             int count = 0;
             for(int i = 0; i < 9; i ++) {
@@ -46,10 +46,10 @@ public enum CustomOperation implements Operation {
                 count++;
             }
 
-            CustomOperation.pointer.instruction = new Object[count];
+            nlgraph.pointer.instruction = new Object[count];
 
             for(int i = 0; i < count; i ++) {
-                CustomOperation.pointer.instruction[i] = instruction[i];
+                nlgraph.pointer.instruction[i] = instruction[i];
             }
         }
 
@@ -66,7 +66,7 @@ public enum CustomOperation implements Operation {
         @Override
         public void execute(Object[] instruction, float[] memory, HashMap<String, WritableFile> writableFiles, HashMap<String, ReadableFile> readableFiles, HashMap<String, Array> arrays, String[] stringTable) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
             Node node = new Node();
-            node.parentNode = CustomOperation.pointer;
+            node.parentNode = nlgraph.pointer;
 
             int count = 0;
             for(int i = 0; i < 9; i ++) {
@@ -80,7 +80,7 @@ public enum CustomOperation implements Operation {
                 node.instruction[i] = instruction[i];
             }
 
-            CustomOperation.pointer.childNodes.add(node);
+            nlgraph.pointer.childNodes.add(node);
         }
 
         @Override
@@ -96,8 +96,8 @@ public enum CustomOperation implements Operation {
         @Override
         public void execute(Object[] instruction, float[] memory, HashMap<String, WritableFile> writableFiles, HashMap<String, ReadableFile> readableFiles, HashMap<String, Array> arrays, String[] stringTable) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
             int val = (int) Interpreter.getValue(instruction[1], memory);
-            if(CustomOperation.pointer.childNodes.size() <= val) return;
-            CustomOperation.pointer = CustomOperation.pointer.childNodes.get(val);
+            if(nlgraph.pointer.childNodes.size() <= val) return;
+            nlgraph.pointer = nlgraph.pointer.childNodes.get(val);
         }
 
         @Override
@@ -112,8 +112,8 @@ public enum CustomOperation implements Operation {
 
         @Override
         public void execute(Object[] instruction, float[] memory, HashMap<String, WritableFile> writableFiles, HashMap<String, ReadableFile> readableFiles, HashMap<String, Array> arrays, String[] stringTable) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
-            if(CustomOperation.pointer.parentNode == null) return;
-            CustomOperation.pointer = CustomOperation.pointer.parentNode;
+            if(nlgraph.pointer.parentNode == null) return;
+            nlgraph.pointer = nlgraph.pointer.parentNode;
         }
 
         @Override
@@ -134,13 +134,13 @@ public enum CustomOperation implements Operation {
                 firstFreeIndex = Math.max(firstFreeIndex, entry.getValue().end);
             }
 
-            int size = CustomOperation.pointer.instruction.length - 1;
+            int size = nlgraph.pointer.instruction.length - 1;
 
             Array arr = new Array(firstFreeIndex, size);
             arrays.put((String) instruction[1], arr);
 
             for(int i = arr.start; i < arr.end; i ++) {
-                memory[i] = (Float) CustomOperation.pointer.instruction[i - arr.start + 1];
+                memory[i] = (Float) nlgraph.pointer.instruction[i - arr.start + 1];
             }
         }
 
@@ -156,7 +156,7 @@ public enum CustomOperation implements Operation {
 
         @Override
         public void execute(Object[] instruction, float[] memory, HashMap<String, WritableFile> writableFiles, HashMap<String, ReadableFile> readableFiles, HashMap<String, Array> arrays, String[] stringTable) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
-            memory[(Integer) instruction[8]] = CustomOperation.pointer.childNodes.size();
+            memory[(Integer) instruction[8]] = nlgraph.pointer.childNodes.size();
         }
 
         @Override
@@ -167,13 +167,13 @@ public enum CustomOperation implements Operation {
 
     public static Node pointer;
 
-    public CustomOperation value(String str) {
+    public nlgraph value(String str) {
         return switch (str) {
             case "PING" -> PING;
             default -> null;
         };
     }
 
-    CustomOperation() {
+    nlgraph() {
     }
 }
