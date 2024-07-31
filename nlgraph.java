@@ -41,15 +41,15 @@ public enum nlgraph implements Operation {
             nlgraph.pointer = new Node();
 
             int count = 0;
-            for(int i = 0; i < 9; i ++) {
+            for(int i = 1; i < 9; i ++) {
                 if(instruction[i] == null) break;
                 count++;
             }
 
             nlgraph.pointer.instruction = new Object[count];
 
-            for(int i = 0; i < count; i ++) {
-                nlgraph.pointer.instruction[i] = instruction[i];
+            for(int i = 1; i <= count; i ++) {
+                nlgraph.pointer.instruction[i-1] = Interpreter.getValue(instruction[i], memory);
             }
         }
 
@@ -69,15 +69,15 @@ public enum nlgraph implements Operation {
             node.parentNode = nlgraph.pointer;
 
             int count = 0;
-            for(int i = 0; i < 9; i ++) {
+            for(int i = 1; i < 9; i ++) {
                 if(instruction[i] == null) break;
                 count++;
             }
 
             node.instruction = new Object[count];
 
-            for(int i = 0; i < count; i ++) {
-                node.instruction[i] = instruction[i];
+            for(int i = 1; i <= count; i ++) {
+                node.instruction[i-1] = Interpreter.getValue(instruction[i], memory);
             }
 
             nlgraph.pointer.childNodes.add(node);
@@ -134,13 +134,13 @@ public enum nlgraph implements Operation {
                 firstFreeIndex = Math.max(firstFreeIndex, entry.getValue().end);
             }
 
-            int size = nlgraph.pointer.instruction.length - 1;
+            int size = nlgraph.pointer.instruction.length;
 
             Array arr = new Array(firstFreeIndex, size);
             arrays.put((String) instruction[1], arr);
 
             for(int i = arr.start; i < arr.end; i ++) {
-                memory[i] = (Float) nlgraph.pointer.instruction[i - arr.start + 1];
+                memory[i] = (Float) nlgraph.pointer.instruction[i - arr.start];
             }
         }
 
